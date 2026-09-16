@@ -1,6 +1,6 @@
-﻿# ChatAIWeb
+﻿# StudyRAG
 
-ChatAIWeb is an ASP.NET Core Razor Pages application that provides a RAG chatbot for Vietnamese study materials. The system lets Admins/Teachers upload PDF, DOCX, and PPTX files, split the content into chunks, generate embeddings, retrieve relevant context, and produce answers with source citations.
+StudyRAG is an ASP.NET Core Razor Pages application that provides a RAG chatbot for Vietnamese study materials. The system lets Admins/Teachers upload PDF, DOCX, and PPTX files, split the content into chunks, generate embeddings, retrieve relevant context, and produce answers with source citations.
 
 The project follows a 3-layer architecture for the PRN222/FPT course: `Presentation`, `BusinessLogic`, `DataAccess`, `BusinessObject`.
 
@@ -92,15 +92,15 @@ cd D:\Study_Research\Knowledge\IT\FPT\kì_7\PRN222\Assignments
 If cloning from Git:
 
 ```powershell
-git clone <repo-url> ChatAIWeb
-cd ChatAIWeb
+git clone <repo-url> StudyRAG
+cd StudyRAG
 ```
 
 ### 2. Restore and build
 
 ```powershell
-dotnet restore ChatAIWeb.slnx
-dotnet build ChatAIWeb.slnx
+dotnet restore StudyRAG.slnx
+dotnet build StudyRAG.slnx
 ```
 
 A successful build shows:
@@ -114,12 +114,12 @@ Build succeeded.
 Open SQL Server Management Studio or Azure Data Studio, then run the file:
 
 ```text
-ChatAIWeb_Database.sql
+StudyRAG_Database.sql
 ```
 
-This file creates the `ChatAIWebDb` database, the required tables, and seeds demo data.
+This file creates the `StudyRAGDb` database, the required tables, and seeds demo data.
 
-When updating an existing database, run `ChatAIWeb_Database.sql` again. The script contains idempotent schema updates, including `DocumentChunkEmbeddings`, RAGAS fields, and `Documents.IsSystemManaged`.
+When updating an existing database, run `chataiweb_Database.sql` again. The script contains idempotent schema updates, including `DocumentChunkEmbeddings`, RAGAS fields, and `Documents.IsSystemManaged`.
 
 ### 4. Check the connection string
 
@@ -133,20 +133,20 @@ Default:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=localhost;Database=ChatAIWebDb;Trusted_Connection=True;TrustServerCertificate=true;Encrypt=false;"
+  "DefaultConnection": "Server=localhost;Database=StudyRAGDb;Trusted_Connection=True;TrustServerCertificate=true;Encrypt=false;"
 }
 ```
 
 If your machine hits a SQL Server encryption error, try changing it to:
 
 ```json
-"DefaultConnection": "Server=localhost;Database=ChatAIWebDb;Trusted_Connection=True;TrustServerCertificate=true;Encrypt=false;"
+"DefaultConnection": "Server=localhost;Database=StudyRAGDb;Trusted_Connection=True;TrustServerCertificate=true;Encrypt=false;"
 ```
 
 If using SQL Server Express:
 
 ```json
-"DefaultConnection": "Server=.\\SQLEXPRESS;Database=ChatAIWebDb;Trusted_Connection=True;TrustServerCertificate=true;Encrypt=false;"
+"DefaultConnection": "Server=.\\SQLEXPRESS;Database=StudyRAGDb;Trusted_Connection=True;TrustServerCertificate=true;Encrypt=false;"
 ```
 
 ### 5. Run the application
@@ -345,7 +345,7 @@ Configuration:
   "Port": 6333,
   "UseHttps": false,
   "ApiKey": "",
-  "CollectionPrefix": "chataiweb"
+  "CollectionPrefix": "StudyRAG"
 }
 ```
 
@@ -370,7 +370,7 @@ Or switch the provider to SQL:
 
 ### With Visual Studio
 
-1. Open `ChatAIWeb.slnx`.
+1. Open `StudyRAG.slnx`.
 2. Set the startup project to `Presentation`.
 3. Select the `https` profile.
 4. Click Run.
@@ -396,25 +396,25 @@ Stop-Process -Id <PID> -Force
 
 ## Seed Accounts
 
-The seed passwords are recorded in `ChatAIWeb_Database.sql`.
+The seed passwords are recorded in `chataiweb_Database.sql`.
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Admin | `admin@chataiweb.local` | `Admin@123` |
-| Teacher demo | `teacher@chataiweb.local` | `Teacher@123` |
-| Student demo | `student@chataiweb.local` | `Student@123` |
+| Admin | `admin@StudyRAG.local` | `Admin@123` |
+| Teacher demo | `teacher@StudyRAG.local` | `Teacher@123` |
+| Student demo | `student@StudyRAG.local` | `Student@123` |
 
 The seeded database also contains many other teachers and students.
 
 ## Project Architecture
 
 ```text
-ChatAIWeb
+StudyRAG
 |-- BusinessObject
 |   |-- Entities
 |   `-- Enums
 |-- DataAccess
-|   |-- ChatAIWebDbContext.cs
+|   |-- StudyRAGDbContext.cs
 |   `-- Repositories
 |-- BusinessLogic
 |   |-- DTOs
@@ -512,7 +512,7 @@ Student question
 
 ## Database
 
-Main database: `ChatAIWebDb`.
+Main database: `StudyRAGDb`.
 
 Important tables:
 
@@ -534,14 +534,14 @@ Important tables:
 
 Be careful: this operation will drop the old database if the script contains `DROP DATABASE`/`DROP TABLE`.
 
-1. Open `ChatAIWeb_Database.sql`.
+1. Open `chataiweb_Database.sql`.
 2. Run it with SSMS/Azure Data Studio.
-3. Verify the `ChatAIWebDb` database.
+3. Verify the `StudyRAGDb` database.
 4. Run the app.
 
 ### Existing database
 
-Run `ChatAIWeb_Database.sql` again after pulling schema changes. The current script is the canonical schema and seed source; there is no separate Phase 2 migration file.
+Run `chataiweb_Database.sql` again after pulling schema changes. The current script is the canonical schema and seed source; there is no separate Phase 2 migration file.
 
 ## Python Services
 
@@ -599,7 +599,7 @@ Export the dataset from SQL:
 
 ```powershell
 python finetune_embedding.py `
-  --connection-string "Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=ChatAIWebDb;Trusted_Connection=yes;TrustServerCertificate=yes;" `
+  --connection-string "Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=StudyRAGDb;Trusted_Connection=yes;TrustServerCertificate=yes;" `
   --subject-id 1 `
   --dataset artifacts/embedding_train.jsonl `
   --export-only
@@ -631,8 +631,8 @@ After you have the fine-tuned model, enable it in `appsettings.json`:
 
 | Command | Description |
 | --- | --- |
-| `dotnet restore ChatAIWeb.slnx` | Restore NuGet packages |
-| `dotnet build ChatAIWeb.slnx` | Build the entire solution |
+| `dotnet restore StudyRAG.slnx` | Restore NuGet packages |
+| `dotnet build StudyRAG.slnx` | Build the entire solution |
 | `dotnet run --project Presentation\Presentation.csproj --launch-profile https` | Run the web app |
 | `ollama pull bge-m3` | Download the embedding model |
 | `ollama pull nomic-embed-text` | Download benchmark embedding model |
@@ -675,7 +675,7 @@ Try changing the connection string:
 
 ### 3. RAGAS page reports an invalid or missing column
 
-Run the latest `ChatAIWeb_Database.sql` against `ChatAIWebDb`, then restart the application.
+Run the latest `chataiweb_Database.sql` against `StudyRAGDb`, then restart the application.
 
 ### 4. Ollama timeout when backfilling embeddings
 
